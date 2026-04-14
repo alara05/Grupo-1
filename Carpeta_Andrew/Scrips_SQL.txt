@@ -27,6 +27,8 @@ CREATE TABLE CLIENTE (
     id_cli VARCHAR2(4) PRIMARY KEY,
     nom_cli VARCHAR2(30),
     ape_cli VARCHAR2(30),
+    edad NUMBER(3),
+    sue_cli NUMBER(10,2),
     dir_cli VARCHAR2(60),
     tel_cli VARCHAR2(15),
     tip_cli VARCHAR2(20),
