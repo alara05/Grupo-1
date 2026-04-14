@@ -1,0 +1,112 @@
+-- =========================
+-- TABLA EMPRESA
+-- =========================
+CREATE TABLE EMPRESA (
+    id_emp VARCHAR2(4) PRIMARY KEY,
+    nom_emp VARCHAR2(60) NOT NULL,
+    dir_emp VARCHAR2(60),
+    tel_emp VARCHAR2(15),
+    ciu_emp VARCHAR2(40)
+);
+
+-- =========================
+-- TABLA HOTEL
+-- =========================
+CREATE TABLE HOTEL (
+    id_hot VARCHAR2(4) PRIMARY KEY,
+    nom_hot VARCHAR2(50) NOT NULL,
+    ubi_hot VARCHAR2(60),
+    tel_hot VARCHAR2(15),
+    cat_hot VARCHAR2(20)
+);
+
+-- =========================
+-- TABLA CLIENTE (EJECUTIVO)
+-- =========================
+CREATE TABLE CLIENTE (
+    id_cli VARCHAR2(4) PRIMARY KEY,
+    nom_cli VARCHAR2(30),
+    ape_cli VARCHAR2(30),
+    dir_cli VARCHAR2(60),
+    tel_cli VARCHAR2(15),
+    tip_cli VARCHAR2(20),
+    id_emp VARCHAR2(4),
+    id_supervisor VARCHAR2(4),
+    
+    CONSTRAINT fk_cliente_empresa
+        FOREIGN KEY (id_emp)
+        REFERENCES EMPRESA(id_emp),
+        
+    CONSTRAINT fk_cliente_supervisor
+        FOREIGN KEY (id_supervisor)
+        REFERENCES CLIENTE(id_cli)
+);
+
+-- =========================
+-- TABLA HABITACION
+-- =========================
+CREATE TABLE HABITACION (
+    id_hab VARCHAR2(4) PRIMARY KEY,
+    tip_hab VARCHAR2(20),
+    cos_dia_hab NUMBER(10,2),
+    des_hab VARCHAR2(60),
+    id_hot VARCHAR2(4),
+    CONSTRAINT fk_habitacion_hotel
+        FOREIGN KEY (id_hot)
+        REFERENCES HOTEL(id_hot)
+);
+
+-- =========================
+-- TABLA RECEPCIONISTA
+-- =========================
+CREATE TABLE RECEPCIONISTA (
+    id_rec VARCHAR2(4) PRIMARY KEY,
+    nom_rec VARCHAR2(30),
+    ape_rec VARCHAR2(30),
+    sue_rec NUMBER(10,2),
+    tit_rec VARCHAR2(30),
+    id_hot VARCHAR2(4),
+    CONSTRAINT fk_recepcionista_hotel
+        FOREIGN KEY (id_hot)
+        REFERENCES HOTEL(id_hot)
+);
+
+-- =========================
+-- TABLA RESERVA (HOSPEDAJE)
+-- =========================
+CREATE TABLE RESERVA (
+    num_res VARCHAR2(4) PRIMARY KEY,
+    fec_res DATE,
+    fec_ing DATE,
+    fec_sal DATE,
+    val_res NUMBER(10,2),
+    id_rec VARCHAR2(4),
+    id_cli VARCHAR2(4),
+    id_hab VARCHAR2(4),
+    
+    CONSTRAINT fk_reserva_recepcionista
+        FOREIGN KEY (id_rec)
+        REFERENCES RECEPCIONISTA(id_rec),
+        
+    CONSTRAINT fk_reserva_cliente
+        FOREIGN KEY (id_cli)
+        REFERENCES CLIENTE(id_cli),
+        
+    CONSTRAINT fk_reserva_habitacion
+        FOREIGN KEY (id_hab)
+        REFERENCES HABITACION(id_hab)
+);
+
+-- =========================
+-- TABLA OBSERVACION (NOVEDAD)
+-- =========================
+CREATE TABLE OBSERVACION (
+    num_obs VARCHAR2(4) PRIMARY KEY,
+    des_obs VARCHAR2(100),
+    fec_obs DATE,
+    num_res VARCHAR2(4),
+    
+    CONSTRAINT fk_observacion_reserva
+        FOREIGN KEY (num_res)
+        REFERENCES RESERVA(num_res)
+);
