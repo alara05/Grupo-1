@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ejercicio: Foreign Key e Integridad Referencial</title>
+<style>
+body{font-family:Arial, sans-serif; margin:40px; background:#f5f7fa; color:#333}
+h1,h2{color:#2c3e50}
+.card{background:white; padding:20px; margin-bottom:20px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1)}
+code{background:#eef; padding:10px; display:block; border-radius:8px; overflow-x:auto}
+.highlight{background:#e8f8f5; padding:10px; border-left:5px solid #1abc9c}
+.error{background:#fdecea; padding:10px; border-left:5px solid #e74c3c}
+.success{background:#eafaf1; padding:10px; border-left:5px solid #2ecc71}
+</style>
+</head>
+<body>
+
+<h1>🧪 Ejercicio: Foreign Key e Integridad Referencial</h1>
+
+<div class="card">
+<h2>🎯 Objetivo</h2>
+<p>Aprender qué es una clave foránea, la integridad referencial y la diferencia entre <b>ON DELETE CASCADE</b> y <b>NO ACTION</b>.</p>
+</div>
+
+<div class="card">
+<h2>🧱 Creación de Tablas</h2>
+<code>
+CREATE DATABASE BibliotecaFK;
+USE BibliotecaFK;
+
+CREATE TABLE ARTICULO (
+ id_articulo INT AUTO_INCREMENT PRIMARY KEY,
+ nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE PRESTAMO (
+ id_prestamo INT AUTO_INCREMENT PRIMARY KEY,
+ fecha DATE NOT NULL
+);
+
+CREATE TABLE DETALLE_PRESTAMO (
+ id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+ id_prestamo INT,
+ id_articulo INT,
+ cantidad INT,
+
+ FOREIGN KEY (id_prestamo)
+ REFERENCES PRESTAMO(id_prestamo)
+ ON DELETE CASCADE,
+
+ FOREIGN KEY (id_articulo)
+ REFERENCES ARTICULO(id_articulo)
+ ON DELETE NO ACTION
+);
+</code>
+</div>
+
+<div class="card">
+<h2>🧠 Conceptos Clave</h2>
+<div class="highlight">
+<b>Integridad Referencial:</b> No puedes usar datos que no existen.
+</div>
+<div class="highlight">
+<b>CASCADE:</b> Si eliminas un préstamo, se eliminan sus detalles automáticamente.
+</div>
+<div class="highlight">
+<b>NO ACTION:</b> No puedes eliminar un artículo si está en uso.
+</div>
+</div>
+
+<div class="card">
+<h2>🧪 Inserción de Datos</h2>
+<code>
+INSERT INTO ARTICULO (nombre) VALUES ('Libro A'), ('Libro B');
+INSERT INTO PRESTAMO (fecha) VALUES ('2026-04-20');
+INSERT INTO DETALLE_PRESTAMO VALUES (NULL,1,1,2);
+</code>
+</div>
+
+<div class="card">
+<h2>🔍 Pruebas</h2>
+
+<h3>❌ Prueba 1: Error de integridad</h3>
+<code>
+INSERT INTO DETALLE_PRESTAMO VALUES (NULL,99,1,1);
+</code>
+<div class="error">Debe fallar porque el préstamo no existe.</div>
+
+<h3>✅ Prueba 2: CASCADE</h3>
+<code>
+DELETE FROM PRESTAMO WHERE id_prestamo=1;
+</code>
+<div class="success">Los detalles se eliminan automáticamente.</div>
+
+<h3>❌ Prueba 3: NO ACTION</h3>
+<code>
+DELETE FROM ARTICULO WHERE id_articulo=1;
+</code>
+<div class="error">Debe fallar porque el artículo está en uso.</div>
+
+</div>
+
+<div class="card">
+<h2>🎓 Preguntas</h2>
+<ul>
+<li>¿Qué pasa si eliminas un préstamo?</li>
+<li>¿Por qué no puedes eliminar un artículo?</li>
+<li>¿Qué garantiza la integridad referencial?</li>
+</ul>
+</div>
+
+</body>
+</html>
