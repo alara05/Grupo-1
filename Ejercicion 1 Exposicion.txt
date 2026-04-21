@@ -1,0 +1,58 @@
+Ejercicio 1:
+Una institución educativa necesita registrar sus cursos y los estudiantes inscritos. Diseña e implementa el siguiente esquema en Oracle 10g:
+
+Requerimientos:
+Tabla INSTRUCTOR: cédula única, nombre, apellido y especialidad
+Tabla CURSO: código único, nombre, duración en horas (debe ser mayor que 0 y máximo 200), modalidad (PRESENCIAL, VIRTUAL, HIBRIDO) y costo (no negativo). Relacionado con un instructor
+Tabla ESTUDIANTE: cédula única, nombre, apellido, email único y estado (ACTIVO, INACTIVO)
+Tabla INSCRIPCION: registra qué estudiante se inscribió en qué curso, con fecha de inscripción y estado (PENDIENTE, APROBADO, REPROBADO). Si se elimina un curso, sus inscripciones se eliminan también
+
+Tareas:
+Inserta un instructor y un curso válido
+Intenta insertar un curso con duración 300 horas y muestra el error
+
+CREATE TABLE INSTRUCTOR (
+    ID_INS  NUMBER(10)  PRIMARY KEY,
+    CED_INS VARCHAR(10) NOT NULL UNIQUE,
+    NOM_INS VARCHAR(30) NOT NULL,
+    APE_INS VARCHAR(30) NOT NULL,
+    ESP_INS VARCHAR(40)
+);
+
+CREATE TABLE CURSO (
+    ID_CUR  NUMBER(10)   PRIMARY KEY,
+    COD_CUR VARCHAR(10)  UNIQUE,
+    NOM_CUR VARCHAR(50)  NOT NULL,
+    DUR_CUR NUMBER(3)    NOT NULL CHECK (DUR_CUR BETWEEN 1 AND 200),
+    MOD_CUR VARCHAR(15)  NOT NULL CHECK (MOD_CUR IN ('PRESENCIAL','VIRTUAL','HIBRIDO')),
+    COS_CUR NUMBER(8,2)  CHECK (COS_CUR >= 0),
+    ID_INS  NUMBER(10)   NOT NULL,
+    FOREIGN KEY (ID_INS) REFERENCES INSTRUCTOR(ID_INS)
+);
+
+CREATE TABLE ESTUDIANTE (
+    ID_EST  NUMBER(10)  PRIMARY KEY,
+    CED_EST VARCHAR(10) NOT NULL UNIQUE,
+    NOM_EST VARCHAR(30) NOT NULL,
+    APE_EST VARCHAR(30) NOT NULL,
+    EMA_EST VARCHAR(50) NOT NULL UNIQUE,
+    EST_EST VARCHAR(10) NOT NULL CHECK (EST_EST IN ('ACTIVO','INACTIVO'))
+);
+
+CREATE TABLE INSCRIPCION (
+    ID_INS_C NUMBER(10)  PRIMARY KEY,
+    FEC_INS  DATE        NOT NULL,
+    EST_INS  VARCHAR(15) NOT NULL CHECK (EST_INS IN ('PENDIENTE','APROBADO','REPROBADO')),
+    ID_CUR   NUMBER(10)  NOT NULL,
+    ID_EST   NUMBER(10)  NOT NULL,
+    FOREIGN KEY (ID_CUR) REFERENCES CURSO(ID_CUR) ON DELETE CASCADE,
+    FOREIGN KEY (ID_EST) REFERENCES ESTUDIANTE(ID_EST)
+);
+
+Tarea 1: insertar datos válidos
+INSERT INTO INSTRUCTOR VALUES (1, '1801234567', 'Carlos', 'Pérez', 'Base de Datos');
+INSERT INTO CURSO VALUES (1, 'BD-101', 'Fundamentos de BD', 40, 'PRESENCIAL', 150.00, 1);
+COMMIT;
+
+Tarea 2: ORA-02290 check constraint violated
+INSERT INTO CURSO VALUES (2, 'BD-102', 'BD Avanzado', 300, 'VIRTUAL', 200.00, 1);
