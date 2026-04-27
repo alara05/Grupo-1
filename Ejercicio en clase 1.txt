@@ -1,0 +1,81 @@
+Ejercicio en clase:
+Una clínica veterinaria necesita sistematizar su información. En una primera reunión con el cliente, se levantaron los siguientes datos básicos:
+
+Los propietarios se identifican con un número único, y se requiere almacenar su nombre y apellido de forma obligatoria. Los veterinarios también tienen un identificador único, con nombre y apellido obligatorios. Las mascotas cuentan con un identificador único, nombre obligatorio, especie y raza. Los medicamentos tienen un identificador único, nombre obligatorio, precio y stock. Finalmente, las citas tienen un identificador único, fecha y hora obligatorias, y un motivo de consulta.
+
+CREATE TABLE PROPIETARIO (
+    id_propietario NUMBER(10) PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE VETERINARIO (
+    id_veterinario NUMBER(10) PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE MASCOTA (
+    id_mascota NUMBER(10) PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    especie VARCHAR(30),
+    raza VARCHAR(30)
+);
+
+CREATE TABLE MEDICAMENTO (
+    id_medicamento NUMBER(10) PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    precio NUMBER(8,2),
+    stock NUMBER(10)
+);
+
+CREATE TABLE CITA (
+    id_cita NUMBER(10) PRIMARY KEY,
+    fecha DATE NOT NULL,
+    hora VARCHAR(10) NOT NULL,
+    motivo VARCHAR(200)
+);
+
+En una segunda reunión, el cliente recordó información adicional que no había mencionado:
+Los propietarios también deben registrar su teléfono (obligatorio) y una dirección (opcional).
+Los veterinarios deben tener una especialidad obligatoria y un teléfono opcional.
+La raza de la mascota puede no ser conocida, pero el campo especie es obligatorio. Además, cada mascota debe estar vinculada obligatoriamente a un propietario.
+Los medicamentos deben tener una descripción opcional, y tanto precio como stock deben ser obligatorios.
+Cada cita debe estar obligatoriamente asociada a una mascota y a un veterinario.
+Se olvidó por completo que existe una relación entre citas y medicamentos: en una cita se pueden prescribir varios medicamentos, y un medicamento puede aparecer en muchas citas. Para esto se necesita una tabla RECETA que registre la dosis y cantidad, ambas obligatorias.
+
+Propietario: agregar teléfono (obligatorio) y dirección (opcional)
+ALTER TABLE PROPIETARIO ADD (telefono   VARCHAR2(15)    NOT NULL);
+ALTER TABLE PROPIETARIO ADD (direccion  VARCHAR2(100));
+
+2. Veterinario: agregar especialidad (obligatoria) y teléfono (opcional)
+ALTER TABLE VETERINARIO ADD (especialidad  VARCHAR2(60)  NOT NULL);
+ALTER TABLE VETERINARIO ADD (telefono      VARCHAR2(15));
+
+3. Mascota: especie pasa a ser obligatoria, agregar FK a propietario
+ALTER TABLE MASCOTA MODIFY (especie         VARCHAR2(30)  NOT NULL);
+ALTER TABLE MASCOTA ADD    (id_propietario  NUMBER(10)    NOT NULL);
+ALTER TABLE MASCOTA ADD FOREIGN KEY (id_propietario) REFERENCES PROPIETARIO(id_propietario);
+
+4. Medicamento: precio y stock pasan a ser obligatorios, agregar descripción
+ALTER TABLE MEDICAMENTO MODIFY (precio  NUMBER(8,2)   NOT NULL);
+ALTER TABLE MEDICAMENTO MODIFY (stock   NUMBER(10)    NOT NULL);
+ALTER TABLE MEDICAMENTO ADD    (descripcion VARCHAR2(200));
+
+5. Cita: motivo pasa a ser obligatorio, agregar FK a mascota y veterinario
+ALTER TABLE CITA MODIFY (motivo         VARCHAR2(200)  NOT NULL);
+ALTER TABLE CITA ADD    (id_mascota     NUMBER(10)     NOT NULL);
+ALTER TABLE CITA ADD    (id_veterinario NUMBER(10)     NOT NULL);
+ALTER TABLE CITA ADD FOREIGN KEY (id_mascota)     REFERENCES MASCOTA(id_mascota);
+ALTER TABLE CITA ADD FOREIGN KEY (id_veterinario) REFERENCES VETERINARIO(id_veterinario);
+
+6. Crear tabla intermedia RECETA (relación N:M entre CITA y MEDICAMENTO)
+CREATE TABLE RECETA (
+    id_cita NUMBER(10) NOT NULL,
+    id_medicamento NUMBER(10) NOT NULL,
+    dosis VARCHAR2(50) NOT NULL,
+    cantidad NUMBER(10) NOT NULL,
+    PRIMARY KEY (id_cita, id_medicamento),
+    FOREIGN KEY (id_cita) REFERENCES CITA(id_cita),
+    FOREIGN KEY (id_medicamento) REFERENCES MEDICAMENTO(id_medicamento)
+);
