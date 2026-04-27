@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Exposición SQL</title>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg,#020617,#1e3a8a);
+}
+
+.slide{
+    width:900px;
+    height:600px;
+    margin:50px auto;
+    background:white;
+    border-radius:20px;
+    padding:35px;
+    box-shadow:0 20px 40px rgba(0,0,0,.5);
+    page-break-after: always;
+    position:relative;
+}
+
+h1{
+    text-align:center;
+    color:#1e3a8a;
+}
+
+h2{
+    color:#dc2626;
+    margin-top:15px;
+}
+
+.card{
+    background:#f1f5f9;
+    padding:15px;
+    border-radius:12px;
+    margin-top:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+
+.code{
+    background:#111827;
+    color:#22c55e;
+    padding:15px;
+    border-radius:10px;
+    font-family: monospace;
+    white-space: pre;
+    margin-top:10px;
+}
+
+.tag{
+    position:absolute;
+    top:15px;
+    right:20px;
+    background:#2563eb;
+    color:white;
+    padding:5px 12px;
+    border-radius:10px;
+    font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- IN -->
+<div class="slide">
+<div class="tag">IN</div>
+<h1>IN</h1>
+
+<div class="card"><b>Concepto:</b> Permite verificar si un valor pertenece a una lista o subconsulta.</div>
+
+<div class="card"><b>Sintaxis:</b>
+<div class="code">
+columna IN (valor1, valor2)
+</div>
+</div>
+
+<div class="card"><b>Enunciado:</b> Mostrar los productos que han sido vendidos.</div>
+
+<div class="card"><b>SQL:</b>
+<div class="code">
+SELECT NOM_PRO
+FROM PRODUCTOS
+WHERE COD_PRO IN (
+    SELECT COD_PRO_V
+    FROM DETALLE_VENTA
+);
+</div>
+</div>
+</div>
+
+<!-- BETWEEN -->
+<div class="slide">
+<div class="tag">BETWEEN</div>
+<h1>BETWEEN</h1>
+
+<div class="card"><b>Concepto:</b> Filtra valores dentro de un rango.</div>
+
+<div class="card"><b>Sintaxis:</b>
+<div class="code">
+columna BETWEEN valor1 AND valor2
+</div>
+</div>
+
+<div class="card"><b>Enunciado:</b> Mostrar facturas entre enero y junio 2026.</div>
+
+<div class="card"><b>SQL:</b>
+<div class="code">
+SELECT *
+FROM FACTURA
+WHERE FEC_FAC BETWEEN 
+    TO_DATE('01/01/2026','DD/MM/YYYY')
+    AND TO_DATE('30/06/2026','DD/MM/YYYY');
+</div>
+</div>
+</div>
+
+<!-- LIKE -->
+<div class="slide">
+<div class="tag">LIKE</div>
+<h1>LIKE</h1>
+
+<div class="card"><b>Concepto:</b> Permite buscar patrones en texto.</div>
+
+<div class="card"><b>Sintaxis:</b>
+<div class="code">
+columna LIKE 'patrón'
+</div>
+</div>
+
+<div class="card"><b>Enunciado:</b> Mostrar clientes cuyo nombre empieza con J.</div>
+
+<div class="card"><b>SQL:</b>
+<div class="code">
+SELECT NOM_CLI
+FROM CLIENTES
+WHERE NOM_CLI LIKE 'J%';
+</div>
+</div>
+</div>
+
+<!-- ANY -->
+<div class="slide">
+<div class="tag">ANY</div>
+<h1>ANY</h1>
+
+<div class="card"><b>Concepto:</b> Compara con al menos un valor de la subconsulta.</div>
+
+<div class="card"><b>Sintaxis:</b>
+<div class="code">
+columna > ANY (subconsulta)
+</div>
+</div>
+
+<div class="card"><b>Enunciado:</b> Mostrar productos con precio mayor a alguno menor a 1.</div>
+
+<div class="card"><b>SQL:</b>
+<div class="code">
+SELECT NOM_PRO
+FROM PRODUCTOS
+WHERE PRE_UNI > ANY (
+    SELECT PRE_UNI
+    FROM PRODUCTOS
+    WHERE PRE_UNI < 1
+);
+</div>
+</div>
+</div>
+
+<!-- > -->
+<div class="slide">
+<div class="tag">></div>
+<h1>Mayor que</h1>
+
+<div class="card"><b>Concepto:</b> Filtra valores mayores a otro.</div>
+
+<div class="card"><b>Enunciado:</b> Mostrar productos con precio mayor a 1.</div>
+
+<div class="card"><b>SQL:</b>
+<div class="code">
+SELECT *
+FROM PRODUCTOS
+WHERE PRE_UNI > 1;
+</div>
+</div>
+</div>
+
+<!-- < -->
+<div class="slide">
+<div class="tag"><</div>
+<h1>Menor que</h1>
+
+<div class="card"><b>Concepto:</b> Filtra valores menores a otro.</div>
+
+<div class="card"><b>Enunciado:</b> Mostrar productos con stock menor a 200.</div>
+
+<div class="card"><b>SQL:</b>
+<div class="code">
+SELECT *
+FROM PRODUCTOS
+WHERE STOCK < 200;
+</div>
+</div>
+</div>
+
+<!-- = -->
+<div class="slide">
+<div class="tag">=</div>
+<h1>Igual</h1>
+
+<div class="card"><b>Concepto:</b> Compara igualdad exacta.</div>
+
+<div class="card"><b>Enunciado:</b> Mostrar empleados con la factura de mayor total.</div>
+
+<div class="card"><b>SQL:</b>
+<div class="code">
+SELECT NOM_EMP,
+       APE_EMP
+FROM EMPLEADOS
+WHERE CED_EMP IN (
+    SELECT EMP_PER
+    FROM FACTURA
+    WHERE TOTAL = (
+        SELECT MAX(TOTAL)
+        FROM FACTURA
+    )
+);
+</div>
+</div>
+</div>
+
+</body>
+</html>
