@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ejercicios Oracle DDL Interactivo</title>
+  <style>
+    body { font-family: Arial; background:#0f172a; color:#e2e8f0; margin:0; }
+    header { background:#1e293b; padding:20px; text-align:center; }
+    section { margin:20px; padding:20px; background:#1e293b; border-radius:10px; }
+    h2 { color:#38bdf8; }
+    pre { background:#020617; padding:15px; border-radius:8px; overflow:auto; }
+    button { padding:10px; margin:5px; background:#38bdf8; border:none; border-radius:5px; cursor:pointer; }
+    .respuesta { display:none; margin-top:10px; border-left:3px solid #22c55e; padding-left:10px; }
+    .resultado { display:none; border-left:3px solid #ef4444; padding-left:10px; margin-top:10px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ejercicios Oracle Interactivos 🚀</h1>
+  <p>Primero intenta → luego mira SQL + INSERT → después valida si está bien o mal</p>
+</header>
+
+<section>
+  <h2>0. Crear Usuario y Permisos</h2>
+  <pre id="setup">CREATE USER biblioteca IDENTIFIED BY 1234;
+GRANT CONNECT, RESOURCE TO biblioteca;</pre>
+  <button onclick="copiar('setup')">Copiar</button>
+</section>
+
+<section>
+  <h2>1. PRIMARY KEY</h2>
+  <pre>CREATE TABLE usuarios (
+ id NUMBER,
+ nombre VARCHAR2(100)
+);</pre>
+
+  <button onclick="toggle('r1')">Mostrar Respuesta</button>
+  <button onclick="toggle('res1')">Mostrar Resultado</button>
+
+  <div id="r1" class="respuesta">
+    <pre>CREATE TABLE usuarios (
+ id NUMBER PRIMARY KEY,
+ nombre VARCHAR2(100) NOT NULL
+);
+
+INSERT INTO usuarios VALUES (1, 'Juan');
+INSERT INTO usuarios VALUES (1, 'Pedro');</pre>
+  </div>
+
+  <div id="res1" class="resultado">
+    <p>❌ Incorrecto: La PRIMARY KEY no permite valores duplicados.</p>
+  </div>
+</section>
+
+<section>
+  <h2>2. UNIQUE</h2>
+  <pre>CREATE TABLE clientes (
+ correo VARCHAR2(100)
+);</pre>
+
+  <button onclick="toggle('r2')">Mostrar Respuesta</button>
+  <button onclick="toggle('res2')">Mostrar Resultado</button>
+
+  <div id="r2" class="respuesta">
+    <pre>CREATE TABLE clientes (
+ id NUMBER PRIMARY KEY,
+ correo VARCHAR2(100) UNIQUE
+);
+
+INSERT INTO clientes VALUES (1, 'a@gmail.com');
+INSERT INTO clientes VALUES (2, 'a@gmail.com');</pre>
+  </div>
+
+  <div id="res2" class="resultado">
+    <p>❌ Incorrecto: UNIQUE no permite valores duplicados.</p>
+  </div>
+</section>
+
+<section>
+  <h2>3. CHECK</h2>
+  <pre>CREATE TABLE personas (
+ edad NUMBER
+);</pre>
+
+  <button onclick="toggle('r3')">Mostrar Respuesta</button>
+  <button onclick="toggle('res3')">Mostrar Resultado</button>
+
+  <div id="r3" class="respuesta">
+    <pre>CREATE TABLE personas (
+ id NUMBER PRIMARY KEY,
+ edad NUMBER CHECK (edad >= 18)
+);
+
+INSERT INTO personas VALUES (1, 15);</pre>
+  </div>
+
+  <div id="res3" class="resultado">
+    <p>❌ Incorrecto: No cumple la condición CHECK (edad >= 18).</p>
+  </div>
+</section>
+
+<section>
+  <h2>4. FOREIGN KEY</h2>
+  <pre>CREATE TABLE pedidos (
+ cliente_id NUMBER
+);</pre>
+
+  <button onclick="toggle('r4')">Mostrar Respuesta</button>
+  <button onclick="toggle('res4')">Mostrar Resultado</button>
+
+  <div id="r4" class="respuesta">
+    <pre>CREATE TABLE clientes (
+ id NUMBER PRIMARY KEY
+);
+
+CREATE TABLE pedidos (
+ id NUMBER PRIMARY KEY,
+ cliente_id NUMBER,
+ CONSTRAINT fk_cliente FOREIGN KEY (cliente_id)
+ REFERENCES clientes(id)
+);
+
+INSERT INTO pedidos VALUES (1, 99);</pre>
+  </div>
+
+  <div id="res4" class="resultado">
+    <p>❌ Incorrecto: El cliente no existe (violación de clave foránea).</p>
+  </div>
+</section>
+
+<section>
+  <h2>5. CASCADE</h2>
+  <pre>FOREIGN KEY (cliente_id) REFERENCES clientes(id);</pre>
+
+  <button onclick="toggle('r5')">Mostrar Respuesta</button>
+  <button onclick="toggle('res5')">Mostrar Resultado</button>
+
+  <div id="r5" class="respuesta">
+    <pre>FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE;
+
+DELETE FROM clientes WHERE id = 1;</pre>
+  </div>
+
+  <div id="res5" class="resultado">
+    <p>⚠️ Puede fallar si NO usas CASCADE y existen registros relacionados.</p>
+  </div>
+</section>
+
+<section>
+  <h2>6. DEFAULT</h2>
+  <pre>estado VARCHAR2(20);</pre>
+
+  <button onclick="toggle('r6')">Mostrar Respuesta</button>
+  <button onclick="toggle('res6')">Mostrar Resultado</button>
+
+  <div id="r6" class="respuesta">
+    <pre>estado VARCHAR2(20) DEFAULT 'ACTIVO';
+
+INSERT INTO productos (id, nombre) VALUES (1, 'Laptop');</pre>
+  </div>
+
+  <div id="res6" class="resultado">
+    <p>✔ Correcto: Se asigna automáticamente 'ACTIVO'.</p>
+  </div>
+</section>
+
+<section>
+  <h2>7. NOT NULL</h2>
+  <pre>nombre VARCHAR2(100);</pre>
+
+  <button onclick="toggle('r7')">Mostrar Respuesta</button>
+  <button onclick="toggle('res7')">Mostrar Resultado</button>
+
+  <div id="r7" class="respuesta">
+    <pre>nombre VARCHAR2(100) NOT NULL;
+
+INSERT INTO empleados (id, nombre) VALUES (1, NULL);</pre>
+  </div>
+
+  <div id="res7" class="resultado">
+    <p>❌ Incorrecto: NOT NULL no permite valores nulos.</p>
+  </div>
+</section>
+
+<section>
+  <h2>8. ALTER TABLE</h2>
+  <pre>ALTER empleados salario NUMBER;</pre>
+
+  <button onclick="toggle('r8')">Mostrar Respuesta</button>
+  <button onclick="toggle('res8')">Mostrar Resultado</button>
+
+  <div id="r8" class="respuesta">
+    <pre>ALTER TABLE empleados ADD salario NUMBER;</pre>
+  </div>
+
+  <div id="res8" class="resultado">
+    <p>❌ Incorrecto: falta TABLE en la sintaxis.</p>
+  </div>
+</section>
+
+<script>
+function copiar(id) {
+  const texto = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(texto);
+  alert('Copiado');
+}
+
+function toggle(id) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+</script>
+
+</body>
+</html>
